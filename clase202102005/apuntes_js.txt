@@ -1,0 +1,21 @@
+Paginas estaticas (texto, imagenes)
+Se necesitaba dinamismo
+
+Lenguaje de programacion en la web
+
+orientado a objetos
+debilmente tipado
+dinamico (compilacion y runtime)
+
+porque JS?
+es uno de los 3 lenguajes estandares de la web
+html, css, js
+comunidad enorme
+web front-end? angular, react, vuejs!
+mobile? react native!
+desktop? electron!
+back-end? nodejs!
+
+componentes:
+DATOS
+FUNCIONES
