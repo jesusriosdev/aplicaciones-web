@@ -1,33 +1,53 @@
 var express = require('express');
 var app = express();
 var server = require('http').Server(app);
-const fs = require("fs");
+const fs = require('fs');
 
 app.use(express.static('public'));
 
-const dataPathPersons = "server/data/persons.json";
+const bodyParser = require('body-parser');
+app.use(bodyParser.json());
+
+const dataPathPersons = 'server/data/persons.json';
 const readFile = (callback, filePath) => {
-    console.log('entramos a readFile.');
-	fs.readFile(filePath, "utf8", (err, data) => {
+	fs.readFile(filePath, 'utf8', (err, data) => {
 		if (err) {
 			throw err;
 		}
 
-        console.log('ya leimos con fs.readFile.');
 		callback(JSON.parse(data));
 	});
 };
 
-app.get("/persons", (req, res) => {
-    console.log('entramos a /persons.');
-	readFile(
-		(data) => {
-            
-            console.log('ya tenemos la info de readFile.');
-			res.status(200).send(data);
-		},
-		dataPathPersons
-	);
+const writeFile = (fileData, callback, filePath) => {
+	fs.writeFile(filePath, fileData, 'utf8', (err) => {
+		if (err) {
+			throw err;
+		}
+
+		callback();
+	});
+};
+
+app.get('/persons', (req, res) => {
+	readFile((data) => {
+		res.status(200).send(data);
+	}, dataPathPersons);
+});
+
+app.post('/addperson', (req, res) => {
+	readFile((data) => {
+		console.log(req.body);
+		data.push(req.body);
+
+		writeFile(
+			JSON.stringify(data, null, 2),
+			() => {
+				res.status(200).send('a new person has been added..');
+			},
+			dataPathPersons
+		);
+	}, dataPathPersons);
 });
 
 app.get('/hello', (req, res) => {

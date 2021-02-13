@@ -9,11 +9,16 @@
 	<body>
 		<h1>Web Services</h1>
 
-        <h2>Persons</h2>
-        <div id="persons">
+		<h2>Persons</h2>
+		<div id="persons"></div>
 
-        </div>
+		<form onsubmit="return addPerson()">
+			<input type="text" id="name" placeholder="Type name" />
+			<input type="text" id="lastname" placeholder="Type lastname" />
 
-        <script src="js/scripts.js"></script>
+			<input type="submit" value="Add" />
+		</form>
+
+		<script src="js/scripts.js"></script>
 	</body>
 </html>
