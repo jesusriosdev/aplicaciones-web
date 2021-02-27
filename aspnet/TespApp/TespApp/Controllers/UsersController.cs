@@ -6,30 +6,77 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using TespApp.Models;
+using TestApp.Library.DAL.Models;
 
 namespace TespApp.Controllers
 {
     public class UsersController : Controller
     {
         private readonly ILogger<UsersController> _logger;
+        private readonly TestAppEntities _ctx;
 
-        public UsersController(ILogger<UsersController> logger)
+        public UsersController(ILogger<UsersController> logger, TestAppEntities ctx)
         {
             _logger = logger;
+            _ctx = ctx;
         }
 
-        public IActionResult Index()
-        {
-            List<UsersIndexViewModel> model = new List<UsersIndexViewModel>();
-            model.Add(new UsersIndexViewModel("jrios", "Jesus", "Rios", "jrios@gmail.com", 29, DateTime.Now.Date.AddDays(-15), true));
-            model.Add(new UsersIndexViewModel("jrios2", "Jesus2", "Rios2", "jrios2@gmail.com", 32, DateTime.Now.Date.AddDays(-10), true));
-            model.Add(new UsersIndexViewModel("jrios3", "Jesus3", "Rios3", "jrios3@gmail.com", 18, DateTime.Now.Date.AddDays(-4), false));
-            model.Add(new UsersIndexViewModel("jrios4", "Jesus4", "Rios4", "jrios4@gmail.com", 30, DateTime.Now.Date.AddDays(-5), true));
-            model.Add(new UsersIndexViewModel("jrios5", "Jesus5", "Rios5", "jrios5@gmail.com", 25, DateTime.Now.Date.AddDays(-2), false));
-            model.Add(new UsersIndexViewModel("jrios6", "Jesus6", "Rios6", "jrios6@gmail.com", 40, DateTime.Now.Date.AddDays(-8), true));
 
+        [HttpGet]
+        public async Task<IActionResult> Index()
+        {
+            var model = await Users.GetList(_ctx);
             return View(model);
         }
 
+        [HttpGet]
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(Users model)
+        {
+            model.is_active = true;
+            model.created_at = DateTime.Now;
+
+            model = await Users.Add(_ctx, model);
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var model = await Users.GetItem(_ctx, id);
+            model.isActive = model.is_active ?? false;
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(Users model)
+        {
+            model.is_active = model.isActive;
+            var result = await Users.Update(_ctx, model);
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var model = await Users.GetItem(_ctx, id);
+            model.isActive = model.is_active ?? false;
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(Users model)
+        {
+            var result = await Users.Delete(_ctx, model.user_id);
+
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
