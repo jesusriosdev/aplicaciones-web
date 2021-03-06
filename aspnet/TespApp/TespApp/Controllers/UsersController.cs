@@ -10,7 +10,7 @@ using TestApp.Library.DAL.Models;
 
 namespace TespApp.Controllers
 {
-    public class UsersController : Controller
+    public class UsersController : BaseController
     {
         private readonly ILogger<UsersController> _logger;
         private readonly TestAppEntities _ctx;

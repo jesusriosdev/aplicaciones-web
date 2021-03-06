@@ -12,7 +12,7 @@ using TestApp.Library.DAL.Models;
 
 namespace TespApp.Controllers
 {
-    public class CustomFilesController : Controller
+    public class CustomFilesController : BaseController
     {
         private readonly ILogger<CustomFilesController> _logger;
         private readonly TestAppEntities _ctx;
