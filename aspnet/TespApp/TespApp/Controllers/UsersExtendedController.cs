@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -7,16 +8,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using TespApp.Models;
 using TestApp.Library.DAL.Models;
-using TestApp.Library.BLL;
 
 namespace TespApp.Controllers
 {
-    public class UsersController : BaseController
+    public class UsersExtendedController : BaseController
     {
-        private readonly ILogger<UsersController> _logger;
+        private readonly ILogger<UsersExtendedController> _logger;
         private readonly TestAppEntities _ctx;
 
-        public UsersController(ILogger<UsersController> logger, TestAppEntities ctx)
+        public UsersExtendedController(ILogger<UsersExtendedController> logger, TestAppEntities ctx)
         {
             _logger = logger;
             _ctx = ctx;
@@ -26,42 +26,42 @@ namespace TespApp.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var model = await Users.GetList(_ctx);
+            var model = await UsersExtended.GetListExtended(_ctx);
             return View(model);
         }
 
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            var list = await Roles.GetList(_ctx);
+            ViewBag.listRoles = new SelectList(list, "role_id", "description");
             return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(Users model)
+        public async Task<IActionResult> Create(UsersExtended model)
         {
             model.is_active = true;
             model.created_at = DateTime.Now;
 
-            var result = await TestApp.Library.BLL.Session.AddUser(_ctx, model);
-            if(String.IsNullOrWhiteSpace(result.Item2) == false)
-                ModelState.AddModelError("", result.Item2);
-            
+            model = await UsersExtended.Add(_ctx, model);
+
             return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            var model = await Users.GetItem(_ctx, id);
+            var model = await UsersExtended.GetItem(_ctx, id);
             model.isActive = model.is_active ?? false;
             return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(Users model)
+        public async Task<IActionResult> Edit(UsersExtended model)
         {
             model.is_active = model.isActive;
-            var result = await Users.Update(_ctx, model);
+            var result = await UsersExtended.Update(_ctx, model);
 
             return RedirectToAction(nameof(Index));
         }
@@ -69,15 +69,15 @@ namespace TespApp.Controllers
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
-            var model = await Users.GetItem(_ctx, id);
+            var model = await UsersExtended.GetItem(_ctx, id);
             model.isActive = model.is_active ?? false;
             return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Delete(Users model)
+        public async Task<IActionResult> Delete(UsersExtended model)
         {
-            var result = await Users.Delete(_ctx, model.user_id);
+            var result = await UsersExtended.Delete(_ctx, model.user_id);
 
             return RedirectToAction(nameof(Index));
         }
